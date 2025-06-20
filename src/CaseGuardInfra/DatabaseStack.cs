@@ -9,41 +9,25 @@ namespace CaseGuardInfra
     {
         public DatabaseStack(Construct scope, string id, StackProps props = null) : base(scope, id, props)
         {
-            var vpc = Vpc.FromLookup(this, "Vpc", new VpcLookupOptions
-            {
-                IsDefault = true
-            });
-
-            var subnetGroup = new SubnetGroup(this, "RdsSubnetGroup", new SubnetGroupProps
-            {
-                Description = "Subnet group for RDS instance",
-                Vpc = vpc,
-                VpcSubnets = new SubnetSelection { SubnetType = SubnetType.PUBLIC },
-                RemovalPolicy = RemovalPolicy.DESTROY
-            });
+            var vpc = Vpc.FromLookup(this, "Vpc", new VpcLookupOptions { IsDefault = true });
 
             new DatabaseInstance(this, "RdsInstance", new DatabaseInstanceProps
             {
                 Engine = DatabaseInstanceEngine.Postgres(new PostgresInstanceEngineProps
                 {
-                    // Downgraded to version 14, which is widely supported
-                    Version = PostgresEngineVersion.VER_14
+                    Version = PostgresEngineVersion.VER_14 // Changed to supported version
                 }),
-                InstanceType = InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.MICRO), // t3.micro is free tier eligible and supported
                 Vpc = vpc,
+                InstanceType = Amazon.CDK.AWS.EC2.InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
+                Credentials = Credentials.FromGeneratedSecret("admin"),
+                MultiAz = false,
+                AllocatedStorage = 20,
                 VpcSubnets = new SubnetSelection
                 {
                     SubnetType = SubnetType.PUBLIC
                 },
-                SubnetGroup = subnetGroup,
-                Credentials = Credentials.FromGeneratedSecret("admin"),
-                MultiAz = false,
-                AllocatedStorage = 20,
-                BackupRetention = Duration.Days(0),
-                DeletionProtection = false,
                 RemovalPolicy = RemovalPolicy.DESTROY
             });
         }
     }
 }
-
