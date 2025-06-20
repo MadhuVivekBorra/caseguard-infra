@@ -9,13 +9,18 @@ namespace CaseGuardInfra
     {
         public DatabaseStack(Construct scope, string id, StackProps props = null) : base(scope, id, props)
         {
-            var vpc = Vpc.FromLookup(this, "Vpc", new VpcLookupOptions { IsDefault = true });
+            
+            var vpc = Vpc.FromLookup(this, "Vpc", new VpcLookupOptions 
+            { 
+                IsDefault = true 
+            });
 
+            
             new DatabaseInstance(this, "RdsInstance", new DatabaseInstanceProps
             {
                 Engine = DatabaseInstanceEngine.Postgres(new PostgresInstanceEngineProps
                 {
-                    Version = PostgresEngineVersion.VER_14 // Changed to supported version
+                    Version = PostgresEngineVersion.VER_14
                 }),
                 Vpc = vpc,
                 InstanceType = Amazon.CDK.AWS.EC2.InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
