@@ -21,6 +21,11 @@ jobs:
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -28,11 +33,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Install dependencies
-        run: |
-          npm install -g aws-cdk
-          dotnet tool install -g Amazon.CDK.GlobalTool
-          dotnet restore src/CaseGuardInfra/CaseGuardInfra.csproj
+      - name: Restore dependencies
+        run: dotnet restore src/CaseGuardInfra/CaseGuardInfra.csproj
 
       - name: Deploy CDK Stack
-        run: cdk deploy --require-approval never
+        run: cdk deploy --all --require-approval never
+
