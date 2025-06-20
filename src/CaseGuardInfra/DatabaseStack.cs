@@ -9,13 +9,11 @@ namespace CaseGuardInfra
     {
         public DatabaseStack(Construct scope, string id, StackProps props = null) : base(scope, id, props)
         {
-            
             var vpc = Vpc.FromLookup(this, "Vpc", new VpcLookupOptions 
             { 
                 IsDefault = true 
             });
 
-            
             new DatabaseInstance(this, "RdsInstance", new DatabaseInstanceProps
             {
                 Engine = DatabaseInstanceEngine.Postgres(new PostgresInstanceEngineProps
@@ -24,7 +22,7 @@ namespace CaseGuardInfra
                 }),
                 Vpc = vpc,
                 InstanceType = Amazon.CDK.AWS.EC2.InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
-                Credentials = Credentials.FromGeneratedSecret("admin"),
+                Credentials = Credentials.FromGeneratedSecret("caseguarduser"), // ✅ NOT 'admin'
                 MultiAz = false,
                 AllocatedStorage = 20,
                 VpcSubnets = new SubnetSelection
@@ -36,3 +34,4 @@ namespace CaseGuardInfra
         }
     }
 }
+
