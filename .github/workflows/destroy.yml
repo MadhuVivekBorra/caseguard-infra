@@ -1,10 +1,10 @@
-name: destroy CDK on AWS
+name: Destroy CDK on AWS
 
 on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  destroy:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,8 +35,4 @@ jobs:
         run: dotnet restore src/CaseGuardInfra/CaseGuardInfra.csproj
 
       - name: Destroy CDK Stack
-        run: cdk destroy --all
-
-
-      
-
+        run: cdk destroy --all --force
